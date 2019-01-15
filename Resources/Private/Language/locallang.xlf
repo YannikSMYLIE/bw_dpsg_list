@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="de" datatype="plaintext" original="messages" date="2017-12-09T14:59:40Z" product-name="bw_dpsg_list">
+		<header/>
+		<body>
+		    <!-- Server -->
+			<trans-unit id="tx_bwdpsglist_domain_model_server">
+				<source>Mailman Server</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_server.address">
+				<source>Server Adresse</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_server.version">
+				<source>Mailman Version</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_server.version.2">
+				<source>2.15.x</source>
+			</trans-unit>
+
+
+		    <!-- Maillist -->
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist">
+				<source>Mailman Mailingliste</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.palettes.access">
+				<source>Zugangsdaten</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.palettes.list">
+				<source>Verteiler Einstellungen</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.server">
+				<source>Server</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.name">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.password">
+				<source>Password</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.listowner">
+				<source>E-Mail Verteileradministrator</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.senders">
+				<source>Absender</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.receivers">
+				<source>Empfänger</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.type">
+				<source>Verteilertyp</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.type.restricted">
+				<source>Nur eingetragene Personen können an den Verteiler schreiben</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.type.all">
+				<source>Jeder kann an den Verteiler schreiben</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.type.0">
+				<source>Nur eingetragene Personen können an den Verteiler schreiben</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.type.1">
+				<source>Jeder kann an den Verteiler schreiben</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.archive">
+				<source>Archivierung</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.archive.1">
+				<source>Diesen Verteiler archivieren</source>
+			</trans-unit>
+
+			<!-- Group -->
+			<trans-unit id="tx_bwdpsglist_domain_model_group">
+				<source>Benutzergruppe</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.palettes.type">
+				<source>Anzuwenden auf folgende Benutzertypen</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.palettes.maillist">
+				<source>Verbundene Mailliste</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.leaders">
+				<source>Leiter</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.members">
+				<source>Mitglieder</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.staff">
+				<source>Mitarbeiter</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.stufen">
+				<source>Stufen</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.additional_groups">
+				<source>Weitere Benutzergruppen</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.maillist">
+				<source>Mailliste</source>
+			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_group.role">
+				<source>Rolle</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

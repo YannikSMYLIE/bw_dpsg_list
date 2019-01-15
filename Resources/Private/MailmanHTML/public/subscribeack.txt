@@ -1,0 +1,13 @@
+Hallo!
+Du wurdest erfolgreich als Empfaenger fuer den Verteiler
+%(real_name)s@%(host_name)s
+eingetragen.
+
+Alle E-Mails welche an %(real_name)s@%(host_name)s gesendet werden landen ab jetzt auch in deinem Postfach!
+
+----------------------------------------------------------------
+
+Die Eintragung in diesen Verteiler erfolgte automatisch aufgrund deiner Mitgliedschaft bei der Deutschen Pfadfinderschaft St. Georg im Stamm Sugambrer in Bonn-Beuel.
+Deine Daten wurden unserer zentralen Mitgliederliste entnommen.
+Solltest du faelschlicherweise in diesem Verteiler sein ueberpruefe bitte deine Daten auf unsere Homepage oder setze dich mit uns in Verbindung.
+https://www.stamm-sugambrer.de
