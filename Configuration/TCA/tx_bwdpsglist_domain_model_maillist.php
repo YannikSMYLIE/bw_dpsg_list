@@ -26,6 +26,7 @@ return [
     'types' => [
 		'1' => ['showitem' => '
 		--palette--;LLL:EXT:bw_dpsg_list/Resources/Private/Language/locallang.xlf:tx_bwdpsglist_domain_model_maillist.palettes.access;access,
+		displayname,
 		--palette--;LLL:EXT:bw_dpsg_list/Resources/Private/Language/locallang.xlf:tx_bwdpsglist_domain_model_maillist.palettes.list;list,
 		senders,
 		receivers
@@ -50,6 +51,15 @@ return [
 		        'size' => 30,
 		        'eval' => 'trim,required'
 	        ],
+        ],
+        'displayname' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:bw_dpsg_list/Resources/Private/Language/locallang.xlf:tx_bwdpsglist_domain_model_maillist.displayname',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim,required'
+            ],
         ],
         'password' => [
 	        'exclude' => true,

@@ -34,6 +34,9 @@
 			<trans-unit id="tx_bwdpsglist_domain_model_maillist.name">
 				<source>Name</source>
 			</trans-unit>
+			<trans-unit id="tx_bwdpsglist_domain_model_maillist.displayname">
+				<source>Anzeigename</source>
+			</trans-unit>
 			<trans-unit id="tx_bwdpsglist_domain_model_maillist.password">
 				<source>Password</source>
 			</trans-unit>

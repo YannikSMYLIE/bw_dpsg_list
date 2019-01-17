@@ -26,22 +26,39 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 		$this -> server = $server;
     }
 
-	/**
-	 * @var string
-	 */
+    /**
+     * @var string
+     */
     protected $name;
-	/**
-	 * @return string
-	 */
-	public function getName() : string {
-		return $this -> name;
-	}
-	/**
-	 * @param string $name
-	 */
-	public function setName(string $name) : void {
-		$this -> name = $name;
-	}
+    /**
+     * @return string
+     */
+    public function getName() : string {
+        return $this -> name;
+    }
+    /**
+     * @param string $name
+     */
+    public function setName(string $name) : void {
+        $this -> name = $name;
+    }
+
+    /**
+     * @var string
+     */
+    protected $displayname;
+    /**
+     * @return string
+     */
+    public function getDisplayname() : string {
+        return $this -> displayname;
+    }
+    /**
+     * @param string $displayname
+     */
+    public function setDisplayname(string $displayname) : void {
+        $this -> displayname = $displayname;
+    }
 
 	/**
 	 * @var string

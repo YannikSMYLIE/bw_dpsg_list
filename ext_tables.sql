@@ -25,6 +25,7 @@ CREATE TABLE tx_bwdpsglist_domain_model_maillist (
 
   server int(11) unsigned DEFAULT '0',
   name varchar(255) DEFAULT '' NOT NULL,
+	displayname varchar(255) DEFAULT '' NOT NULL,
   password varchar(255) DEFAULT '' NOT NULL,
 	listowner varchar(255) DEFAULT '' NOT NULL,
   senders int(11) unsigned DEFAULT '0',

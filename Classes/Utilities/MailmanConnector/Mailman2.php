@@ -276,9 +276,11 @@ class Mailman2 implements Mailman {
 			'form_params' => [
 				"host_name" => "stamm-sugambrer.de",
 				"owner" => "webmaster@stamm-sugambrer.de",
+                "subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/public/goodbyeack.txt")),
+				"admin_member_chunksize" => 9000,
 				"csrf_token" => $csrfToken
 			]
 		]);
@@ -360,7 +362,10 @@ class Mailman2 implements Mailman {
 				"owner" => "webmaster@stamm-sugambrer.de",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
+				"subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/goodbyeack.txt")),
+                "admin_member_chunksize" => 9000,
+                "max_message_size" => 0,
 				"csrf_token" => $csrfToken
 			]
 		]);
