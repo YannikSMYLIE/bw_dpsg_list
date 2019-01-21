@@ -311,7 +311,6 @@ class Mailman2 implements Mailman {
 		]);
 		$this -> guzzle -> post('privacy/sender/', [
 			'form_params' => [
-				"generic_nonmember_action" => 2,
 				"nonmember_rejection_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/public/reject.txt")),
 				"generic_nonmember_action" => 0,
 				"csrf_token" => $csrfToken
@@ -396,7 +395,6 @@ class Mailman2 implements Mailman {
 		]);
 		$this -> guzzle -> post('privacy/sender/', [
 			'form_params' => [
-				"member_moderation_action" => 1,
 				"member_moderation_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
 				"generic_nonmember_action" => 2,
 				"nonmember_rejection_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
