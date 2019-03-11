@@ -281,6 +281,7 @@ class Mailman2 implements Mailman {
 				"send_reminders" => 0,
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/public/goodbyeack.txt")),
 				"admin_member_chunksize" => 9000,
+                "max_message_size" => 0,
 				"csrf_token" => $csrfToken
 			]
 		]);
