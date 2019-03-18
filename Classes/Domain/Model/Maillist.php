@@ -26,39 +26,22 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 		$this -> server = $server;
     }
 
-    /**
-     * @var string
-     */
+	/**
+	 * @var string
+	 */
     protected $name;
-    /**
-     * @return string
-     */
-    public function getName() : string {
-        return $this -> name;
-    }
-    /**
-     * @param string $name
-     */
-    public function setName(string $name) : void {
-        $this -> name = $name;
-    }
-
-    /**
-     * @var string
-     */
-    protected $displayname;
-    /**
-     * @return string
-     */
-    public function getDisplayname() : string {
-        return $this -> displayname;
-    }
-    /**
-     * @param string $displayname
-     */
-    public function setDisplayname(string $displayname) : void {
-        $this -> displayname = $displayname;
-    }
+	/**
+	 * @return string
+	 */
+	public function getName() : string {
+		return $this -> name;
+	}
+	/**
+	 * @param string $name
+	 */
+	public function setName(string $name) : void {
+		$this -> name = $name;
+	}
 
 	/**
 	 * @var string
@@ -182,10 +165,48 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	}
 	private function getEmails($groups) {
 		$emails = [];
+
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
 		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
 		foreach($groups as $member) {
 			$emails = array_merge($emails, $member -> getMails());
 		}
+
+		array_values($emails);
+		return $emails;
+	}
+
+	public function getFullReceiversEmails() {
+		return $this -> getFullEmails($this -> getReceivers());
+	}
+	public function getFullSendersEmails() {
+		return $this -> getFullEmails($this -> getSenders());
+	}
+	private function getFullEmails($groups) {
+		$emails = [];
+
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
+		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
+		foreach($groups as $member) {
+			$emails = array_merge($emails, $member -> getMails());
+		}
+
+		// Dann alle einlesen welche derzeit in der Mailliste sind.
+		$client = \BoergenerWebdesign\BwDpsgList\Utilities\Mailman::create($this);
+		foreach($client -> getMembers() as $member) {
+			if(key_exists($member, $emails)) {
+				$emails[$member]["listed"] = true;
+			} else {
+				$emails[$member] = [
+					'name' => "",
+					'mail' => $member,
+					'authorized' => false,
+					'listed' => true
+				];
+			}
+		}
+
+		array_values($emails);
 		return $emails;
 	}
 }

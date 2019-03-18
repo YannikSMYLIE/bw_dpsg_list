@@ -1,14 +1,32 @@
 <table class="table table-striped" >
     <tr>
         <th>Name</th>
+        <th>E-Mail-Adresse</th>
+        <th>Berechtigt</th>
         <th>In Mailliste eingetragen</th>
         <th> </th>
     </tr>
     <f:for each="{members}" as="member">
-        <tr>
-            <td>{member.name}</td>
-            <td>{member.mail}</td>
-            <td></td>
-        </tr>
+        <f:if condition="{member.authorized} && !{member.listed}">
+            <f:then>
+                <tr class="success">
+                    <f:render partial="Maillist/Show/Row" arguments="{member : member}" />
+                </tr>
+            </f:then>
+            <f:else>
+                <f:if condition="!{member.authorized} && {member.listed}">
+                    <f:then>
+                        <tr class="danger">
+                            <f:render partial="Maillist/Show/Row" arguments="{member : member}" />
+                        </tr>
+                    </f:then>
+                    <f:else>
+                        <tr>
+                            <f:render partial="Maillist/Show/Row" arguments="{member : member}" />
+                        </tr>
+                    </f:else>
+                </f:if>
+            </f:else>
+        </f:if>
     </f:for>
 </table>

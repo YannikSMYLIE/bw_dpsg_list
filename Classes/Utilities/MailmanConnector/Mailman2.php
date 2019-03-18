@@ -43,16 +43,20 @@ class Mailman2 implements Mailman {
 		$response = $this -> guzzle -> get('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/roster/'.$this -> maillist -> getName().'/');
 
 		$dom = new \DOMDocument;
-		$dom->loadHTML($response->getBody());
+		try {
+			$dom->loadHTML($response->getBody(), LIBXML_NOERROR);
+		} catch(\Exception $e) {
+
+		}
 		$domElements = $dom->getElementsByTagName('li');
 		$users = [];
 		foreach($domElements as $user) {
 			$mail = trim($user -> textContent);
 			$match = [];
 			if(preg_match ( '#\((.*?)\)#',$mail, $match)) {
-				$users[] = $match[1];
+				$users[] = strtolower($match[1]);
 			} else {
-				$users[] = $mail;
+				$users[] = strtolower($mail);
 			}
 		}
 		return $users;
@@ -163,25 +167,18 @@ class Mailman2 implements Mailman {
 
 		// Ermitteln wer noch kein Mitglied ist
 		$addToMaillist = [];
-		foreach($this -> maillist -> getReceiversEmails() as $receiversEmail) {
-			$index = array_search($receiversEmail["mail"], $currentMembers);
+		$emails = $this -> maillist -> getReceiversEmails();
+		if($this -> maillist -> getType() == 0) {
+			$emails = array_merge($emails, $this -> maillist -> getSendersEmails());
+		}
+		foreach($emails as $email) {
+			$index = array_search(strtolower($email["mail"]), $currentMembers);
 			if($index !== false) {
 				unset($currentMembers[$index]);
 			} else {
-				$addToMaillist[] = $receiversEmail["mail"];
+				$addToMaillist[] = strtolower($email["mail"]);
 			}
 		}
-		if($this -> maillist -> getType() == 0) {
-			foreach($this -> maillist -> getSendersEmails() as $sendersEmail) {
-				$index = array_search($sendersEmail["mail"], $currentMembers);
-				if($index !== false) {
-					unset($currentMembers[$index]);
-				} else {
-					$addToMaillist[] = $sendersEmail["mail"];
-				}
-			}
-		}
-
 
 		// Fehlende Mitglieder eintragen
 		if($addToMaillist) {
@@ -276,12 +273,9 @@ class Mailman2 implements Mailman {
 			'form_params' => [
 				"host_name" => "stamm-sugambrer.de",
 				"owner" => "webmaster@stamm-sugambrer.de",
-                "subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/public/goodbyeack.txt")),
-				"admin_member_chunksize" => 9000,
-                "max_message_size" => 0,
 				"csrf_token" => $csrfToken
 			]
 		]);
@@ -362,10 +356,7 @@ class Mailman2 implements Mailman {
 				"owner" => "webmaster@stamm-sugambrer.de",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
-				"subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/goodbyeack.txt")),
-                "admin_member_chunksize" => 9000,
-                "max_message_size" => 0,
 				"csrf_token" => $csrfToken
 			]
 		]);
@@ -396,6 +387,7 @@ class Mailman2 implements Mailman {
 		]);
 		$this -> guzzle -> post('privacy/sender/', [
 			'form_params' => [
+				"member_moderation_action" => 1,
 				"member_moderation_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
 				"generic_nonmember_action" => 2,
 				"nonmember_rejection_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
