@@ -177,29 +177,48 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	}
 
 	public function getFullReceiversEmails() {
-		return $this -> getFullEmails($this -> getReceivers());
-	}
-	public function getFullSendersEmails() {
-		return $this -> getFullEmails($this -> getSenders());
-	}
-	private function getFullEmails($groups) {
 		$emails = [];
-
 		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
 		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
-		foreach($groups as $member) {
+		foreach($this -> getReceivers() as $member) {
 			$emails = array_merge($emails, $member -> getMails());
 		}
 
 		// Dann alle einlesen welche derzeit in der Mailliste sind.
 		$client = \BoergenerWebdesign\BwDpsgList\Utilities\Mailman::create($this);
 		foreach($client -> getMembers() as $member) {
-			if(key_exists($member, $emails)) {
-				$emails[$member]["listed"] = true;
-			} else {
-				$emails[$member] = [
-					'name' => "",
-					'mail' => $member,
+			if(key_exists($member["email"], $emails)) {
+				$emails[$member["email"]]["listed"] = true;
+			} else if($member["receive"]) {
+				$emails[$member["email"]] = [
+					'name' => $member["name"],
+					'mail' => $member["email"],
+					'authorized' => false,
+					'listed' => true
+				];
+			}
+		}
+
+		array_values($emails);
+		return $emails;
+	}
+	public function getFullSendersEmails() {
+		$emails = [];
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
+		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
+		foreach($this -> getSenders() as $member) {
+			$emails = array_merge($emails, $member -> getMails());
+		}
+
+		// Dann alle einlesen welche derzeit in der Mailliste sind.
+		$client = \BoergenerWebdesign\BwDpsgList\Utilities\Mailman::create($this);
+		foreach($client -> getMembers() as $member) {
+			if(key_exists($member["email"], $emails)) {
+				$emails[$member["email"]]["listed"] = true;
+			} else if($member["send"]) {
+				$emails[$member["email"]] = [
+					'name' => $member["name"],
+					'mail' => $member["email"],
 					'authorized' => false,
 					'listed' => true
 				];

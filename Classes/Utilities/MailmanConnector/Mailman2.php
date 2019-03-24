@@ -40,25 +40,31 @@ class Mailman2 implements Mailman {
 		if(!$this -> login()) {
 			throw new \Exception("Es konnte keine Verbindung mit dem Verteiler hergestellt werden.");
 		}
-		$response = $this -> guzzle -> get('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/roster/'.$this -> maillist -> getName().'/');
+		$response = $this -> guzzle -> get('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/admin/'.$this -> maillist -> getName().'/members');
 
 		$dom = new \DOMDocument;
-		try {
-			$dom->loadHTML($response->getBody(), LIBXML_NOERROR);
-		} catch(\Exception $e) {
+		$dom->loadHTML($response->getBody(), LIBXML_NOERROR);
+		$table = $dom->getElementsByTagName('table')[4];
+		$trs = $table -> getElementsByTagName("tr");
 
-		}
-		$domElements = $dom->getElementsByTagName('li');
 		$users = [];
-		foreach($domElements as $user) {
-			$mail = trim($user -> textContent);
-			$match = [];
-			if(preg_match ( '#\((.*?)\)#',$mail, $match)) {
-				$users[] = strtolower($match[1]);
-			} else {
-				$users[] = strtolower($mail);
-			}
+		for($i = 2; $i < count($trs); $i++) {
+			$tr = $trs[$i];
+			$tds = $tr -> getElementsByTagName("td");
+
+			$email = strtolower(trim($tds[1] -> getElementsByTagName("a")[0] -> textContent));
+			$name = trim($tds[1] -> getElementsByTagName("input")[0] -> getAttribute('value'));
+			$send = $tds[2] -> getElementsByTagName("input")[0] -> getAttribute('checked') != "checked";
+			$receive = $tds[4] -> getElementsByTagName("input")[0] -> getAttribute('checked') != "checked";
+
+			$users[] = [
+				'email' => $email,
+				'name' => $name,
+				'send' => $send,
+				'receive' => $receive
+			];
 		}
+
 		return $users;
 	}
 
@@ -169,10 +175,12 @@ class Mailman2 implements Mailman {
 		$addToMaillist = [];
 		$emails = $this -> maillist -> getReceiversEmails();
 		if($this -> maillist -> getType() == 0) {
+			// Wenn nur bestimmte Personen an die Liste schreiben dürfen diese auch hinzufügen.
 			$emails = array_merge($emails, $this -> maillist -> getSendersEmails());
 		}
+
 		foreach($emails as $email) {
-			$index = array_search(strtolower($email["mail"]), $currentMembers);
+			$index = $this -> findInMemberArray($email["mail"], $currentMembers);
 			if($index !== false) {
 				unset($currentMembers[$index]);
 			} else {
@@ -186,21 +194,25 @@ class Mailman2 implements Mailman {
 		}
 		// Gelöscht Mitglieder austragen
 		if($currentMembers) {
-			$this -> removeUsers($currentMembers);
+			$emails = [];
+			foreach($currentMembers as $currentMember) {
+				$emails[] = $currentMember["email"];
+			}
+			$this -> removeUsers($emails);
 		}
 
 		// Berechtigungen aller Mitglieder setzen dazu die aktuellen Mitglieder erneut einlesen
 		$currentMembers = $this -> getMembers();
 		$members = [];
 		foreach($currentMembers as $member) {
-			$members[$member] = [
-				"realname" => "",
+			$members[$member["email"]] = [
+				"realname" => $member["name"],
 				"nodupes" => 1,
 				"plain" => 1,
 				"language" => "en"
 			];
 			if(!$this -> maillist -> getType()) {
-				$members[$member]["mod"] = 1;
+				$members[$member["email"]]["mod"] = 1;
 			}
 		}
 
@@ -436,6 +448,15 @@ class Mailman2 implements Mailman {
 		{
 			if ($input->getAttribute('name') == 'csrf_token') {
 				return $input->getAttribute('value');
+			}
+		}
+		return false;
+	}
+
+	private function findInMemberArray($haystack, $array) {
+		foreach($array as $index => $value) {
+			if(strtolower($value["email"]) === strtolower($haystack)) {
+				return $index;
 			}
 		}
 		return false;
