@@ -1,0 +1,12 @@
+<f:layout name="Default" />
+
+<f:section name="content">
+	<h1>Neue Mailliste anlegen</h1>
+
+	<f:flashMessages />
+
+	<f:form action="create" object="Maillist" objectName="maillist">
+		<f:render partial="Maillist/FormFields" arguments="{server : server}" />
+		<f:form.button type="submit" class="btn btn-primary">Maillist anlegen</f:form.button>
+	</f:form>
+</f:section>

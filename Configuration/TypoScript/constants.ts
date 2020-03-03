@@ -1,4 +1,3 @@
-
 module.tx_bwdpsglist {
   view {
     # cat=module.tx_bwdpsglist/file; type=string; label=Path to template root (BE)

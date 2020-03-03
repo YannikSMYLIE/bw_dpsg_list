@@ -1,0 +1,66 @@
+<div class="form-group">
+    <label for="server"><f:translate key="tx_bwdpsglist_domain_model_maillist.server" />:</label>
+    <f:if condition="{maillist}">
+        <f:then>
+            <f:form.select property="server" options="{server}" optionLabelField="address" class="form-control" disabled="1" />
+        </f:then>
+        <f:else>
+            <f:form.select property="server" options="{server}" optionLabelField="address" class="form-control" />
+        </f:else>
+    </f:if>
+
+</div>
+<div class="form-group">
+    <label for="listowner"><f:translate key="tx_bwdpsglist_domain_model_maillist.listowner" />:</label>
+    <f:form.textfield property="listowner" type="email" class="form-control" />
+    <small class="text-muted">Die E-Mail-Adresse des Administrators der Mailliste.</small>
+</div>
+
+<div>
+    <h3>Zugangsdaten</h3>
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+                <label for="name"><f:translate key="tx_bwdpsglist_domain_model_maillist.name" />:</label>
+                <f:form.textfield property="name" class="form-control" />
+                <small class="text-muted">Der Name der Mailliste, welcher vor dem @ steht. Die E-Mail der Mailliste entspricht "[name]@[server]".</small>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+                <label for="password1"><f:translate key="tx_bwdpsglist_domain_model_maillist.password" />:</label>
+                <f:form.textfield property="password" type="password" class="form-control" />
+                <small class="text-muted">Das Passwort mit dem die Mailliste gesichert werden soll.</small>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+                <label for="password2"><f:translate key="tx_bwdpsglist_domain_model_maillist.password" /> wiederholen:</label>
+                <f:form.textfield name="password2" type="password" class="form-control" value="{maillist.password}" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <h3>Verhalten</h3>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+                <label for="type"><f:translate key="tx_bwdpsglist_domain_model_maillist.type" />:</label>
+                <f:form.select property="type" class="form-control" options="{0 : 'Nur eingetragene Personen können an den Verteiler schreiben', 1 : 'Jeder kann an den Verteiler schreiben'}" />
+                <small class="text-muted">Legt fest, wer an die Maillist schreiben darf.</small>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <div class="form-group">
+                <label for="archive"><f:translate key="tx_bwdpsglist_domain_model_maillist.archive" />:</label>
+                <div class="checkbox" style="margin-top: 0;">
+                    <label>
+                        <f:form.checkbox property="archive" value="1" /> <f:translate key="tx_bwdpsglist_domain_model_maillist.archive.1" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

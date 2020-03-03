@@ -1,0 +1,12 @@
+<f:layout name="Default" />
+
+<f:section name="content">
+	<h1>Mailliste aktualisieren</h1>
+
+	<f:flashMessages />
+
+	<f:form action="update" object="{maillist}" objectName="maillist">
+		<f:render partial="Maillist/FormFields" arguments="{server : server, maillist : maillist}" />
+		<f:form.button type="submit" class="btn btn-primary">Maillist aktualisieren</f:form.button>
+	</f:form>
+</f:section>

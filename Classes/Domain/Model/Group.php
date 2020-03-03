@@ -94,6 +94,8 @@ class Group extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	}
 
 	public function getMails() {
+		$emails = [];
+
 		$stufenIds = $this -> getStufen() ? explode(",", $this -> getStufen()) : [];
 		$groupIds = [];
 		foreach($this -> getAdditionalGroups() as $additionalGroup) {
@@ -101,24 +103,19 @@ class Group extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 		}
 		$mitglieder = $this -> mitgliedRepository -> findByGroups($stufenIds, $groupIds, $this -> getLeaders(), $this -> getMembers(), $this -> getStaff());
 
-		$emails = [];
 		/** @var \BoergenerWebdesign\BwDpsgNami\Domain\Model\Mitglied $mitglied */
 		foreach($mitglieder as $mitglied) {
-			if($mitglied -> getEmailEltern()) {
-				$emails[$mitglied -> getEmailEltern()] = [
-					'name' => 'Eltern von '.$mitglied -> getName(),
-					'mail' => $mitglied -> getEmailEltern()
-				];
-			}
-			if($mitglied -> getEmailMitglied()) {
-				$emails[$mitglied -> getEmailMitglied()] = [
+			/** @var \BoergenerWebdesign\BwDpsgNami\Domain\Model\Email $email */
+			foreach($mitglied -> getEmailsMaillist() as $email) {
+				$emails[strtolower($email -> getEmail())] = [
 					'name' => $mitglied -> getName(),
-					'mail' => $mitglied -> getEmailMitglied()
+					'mail' => strtolower($email -> getEmail()),
+					'authorized' => true,
+					'listed' => false
 				];
 			}
 		}
 
-		$emails = array_values($emails);
 		return $emails;
 	}
 

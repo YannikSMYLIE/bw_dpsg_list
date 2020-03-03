@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+        <div class="form-group">
+            <label for="address"><f:translate key="tx_bwdpsglist_domain_model_server.address" />:</label>
+            <f:form.textfield property="address" class="form-control" />
+            <small class="text-muted">Die Adresse des Servers auf dem die Mailman-Instanz läuft.</small>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="form-group">
+            <label for="version"><f:translate key="tx_bwdpsglist_domain_model_server.version" />:</label>
+            <f:form.select options="{versions}" class="form-control" property="version" />
+            <small class="text-muted">Die Version der Mailman-Instanz.</small>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label for="creationPassword"><f:translate key="tx_bwdpsglist_domain_model_server.creation_password" />:</label>
+    <f:form.textfield property="creationPassword" class="form-control" type="password" />
+    <small class="text-muted">Bitte gib das Passwort ein, mit dem neue Maillisten angelegt werden können.</small>
+</div>

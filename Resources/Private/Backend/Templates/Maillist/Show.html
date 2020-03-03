@@ -4,13 +4,10 @@
 	<h1>Übersicht der Mailman Liste <span class="text-info">{maillist.name}</span></h1>
 	<f:flashMessages />
 	<div>
-		<f:link.action action="check" arguments="{maillist : maillist}" class="btn btn-default">
-			<i class="fa fa-fw fa-search" aria-hidden="true"></i> Verbindung überprüfen
-		</f:link.action>
 		<f:link.action action="config" arguments="{maillist : maillist}" class="btn btn-default">
 			<i class="fa fa-fw fa-wrench" aria-hidden="true"></i> Verteiler konfigurieren
 		</f:link.action>
-		<f:link.action action="update" arguments="{maillist : maillist}" class="btn btn-default">
+		<f:link.action action="synchronizeMembers" arguments="{maillist : maillist}" class="btn btn-default">
 			<i class="fa fa-fw fa-exchange" aria-hidden="true"></i> Personen ein- & austragen
 		</f:link.action>
 	</div>
@@ -22,11 +19,11 @@
 		</f:then>
 		<f:else>
 			<p class="text-muted">Nur Mitglieder die hier aufgeführt werden sind können Nachrichten an den Verteiler schreiben. Manuell hinzugefügte Mitglieder werden beim Datenabgleich entfernt!</p>
-			<f:render partial="Maillist/Show/MembersList" arguments="{members : maillist.sendersEmails}" />
+			<f:render partial="Maillist/Show/MembersList" arguments="{members : maillist.fullSendersEmails}" />
 		</f:else>
 	</f:if>
 
 	<h2>Berechtige Empfänger</h2>
 	<p class="text-muted">Nur Mitglieder die hier aufgeführt werden sind Mitglied des Verteilers. Manuell hinzugefügte Mitglieder werden beim Datenabgleich entfernt!</p>
-	<f:render partial="Maillist/Show/MembersList" arguments="{members : maillist.receiversEmails}" />
+	<f:render partial="Maillist/Show/MembersList" arguments="{members : maillist.fullReceiversEmails}" />
 </f:section>

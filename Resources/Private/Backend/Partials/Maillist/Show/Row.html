@@ -1,0 +1,15 @@
+<td>{member.name}</td>
+<td>{member.mail}</td>
+<td>
+    <f:if condition="{member.authorized}">
+        <f:then><i class="fa fa-fw fa-check"></i></f:then>
+        <f:else><i class="fa fa-fw fa-times"></i></f:else>
+    </f:if>
+</td>
+<td>
+    <f:if condition="{member.listed}">
+        <f:then><i class="fa fa-fw fa-check"></i></f:then>
+        <f:else><i class="fa fa-fw fa-times"></i></f:else>
+    </f:if>
+</td>
+<td></td>

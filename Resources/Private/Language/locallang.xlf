@@ -13,8 +13,8 @@
 			<trans-unit id="tx_bwdpsglist_domain_model_server.version">
 				<source>Mailman Version</source>
 			</trans-unit>
-			<trans-unit id="tx_bwdpsglist_domain_model_server.version.2">
-				<source>2.15.x</source>
+			<trans-unit id="tx_bwdpsglist_domain_model_server.creation_password">
+				<source>Passwort für Listenerstellung</source>
 			</trans-unit>
 
 

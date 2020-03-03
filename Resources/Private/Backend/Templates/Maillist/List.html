@@ -15,40 +15,69 @@
 	<table class="table table-striped" >
 		<tr>
 			<th><f:translate key="tx_bwdpsglist_domain_model_maillist.name" /></th>
-			<th><f:translate key="tx_bwdpsglist_domain_model_maillist.server" /></th>
-			<th><f:translate key="tx_bwdpsglist_domain_model_server.version" /></th>
 			<th><f:translate key="tx_bwdpsglist_domain_model_maillist.type" /></th>
 			<th><f:translate key="tx_bwdpsglist_domain_model_maillist.archive" /></th>
 			<th> </th>
 		</tr>
 
-		<f:for each="{maillists}" as="maillist">
+		<f:for each="{server}" as="maillists">
 			<tr>
-				<td>{maillist.name}</td>
-				<td>{maillist.server.address}</td>
-				<td>
-					<f:translate key="tx_bwdpsglist_domain_model_server.version.{maillist.server.version}" />
-				</td>
-				<td>
-					<f:switch expression="{maillist.type}">
-						<f:case value="0">
-							<i class="fa fa-fw fa-minus"></i> <f:translate key="tx_bwdpsglist_domain_model_maillist.type.0" />
-						</f:case>
-						<f:case value="1">
-							<i class="fa fa-fw fa-plus"></i> <f:translate key="tx_bwdpsglist_domain_model_maillist.type.1" />
-						</f:case>
-					</f:switch>
-				</td>
-				<td>
-					<f:if condition="{maillist.archive}">
-						<f:then><i class="fa fa-fw fa-check text-success"></i></f:then>
-						<f:else><i class="fa fa-fw fa-times text-danger"></i></f:else>
-					</f:if>
-				</td>
-				<td style="text-align: right;">
-					<f:link.action action="show" arguments="{maillist : maillist}" class="btn btn-default">Anzeigen</f:link.action>
-				</td>
+				<th colspan="4">
+					{maillists.0.server.address} <em>(Mailman {maillists.0.client.name})</em>
+				</th>
 			</tr>
+			<f:for each="{maillists}" as="maillist">
+				<tr>
+					<td>{maillist.name}</td>
+					<td>
+						<f:switch expression="{maillist.type}">
+							<f:case value="0">
+								<i class="fa fa-fw fa-minus"></i> <f:translate key="tx_bwdpsglist_domain_model_maillist.type.0" />
+							</f:case>
+							<f:case value="1">
+								<i class="fa fa-fw fa-plus"></i> <f:translate key="tx_bwdpsglist_domain_model_maillist.type.1" />
+							</f:case>
+						</f:switch>
+					</td>
+					<td>
+						<f:if condition="{maillist.archive}">
+							<f:then><i class="fa fa-fw fa-check text-success"></i></f:then>
+							<f:else><i class="fa fa-fw fa-times text-danger"></i></f:else>
+						</f:if>
+					</td>
+					<td style="text-align: right;">
+						<f:link.action action="show" arguments="{maillist : maillist}" class="btn btn-default" title="Mailliste anzeigen">
+							<i class="fa fa-eye fa-fw"></i>
+						</f:link.action>
+						<f:link.action action="edit" arguments="{maillist : maillist}" class="btn btn-default" title="Mailliste bearbeiten">
+							<i class="fa fa-edit fa-fw"></i>
+						</f:link.action>
+						<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#maillist-{maillist.uid}-remove" title="Mailliste entfernen">
+							<i class="fa fa-trash-o fa-fw"></i>
+						</button>
+
+						<div class="modal fade text-left" id="maillist-{maillist.uid}-remove" tabindex="-1" role="dialog" aria-labelledby="maillist-{maillist.uid}-removeLabel">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="maillist-{maillist.uid}-removeLabel">Maillist entfernen</h4>
+									</div>
+									<div class="modal-body">
+										<p>Möchtest du diese Maillist wirklich entfernen?</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+										<f:link.action action="delete" arguments="{maillist : maillist}" class="btn btn-danger" title="Maillist entfernen">
+											Maillist wirklich entfernen
+										</f:link.action>
+									</div>
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</f:for>
 		</f:for>
 	</table>
 </f:section>

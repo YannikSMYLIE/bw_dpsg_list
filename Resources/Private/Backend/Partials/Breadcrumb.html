@@ -1,0 +1,57 @@
+<nav id="breadcrumb">
+    <f:if condition="{settings.request.controller} == 'Maillist'">
+        <ul>
+            <li>
+                <f:link.action action="list">Alle Mailinglisten</f:link.action>
+            </li>
+            <f:if condition="{settings.request.action} == 'show'">
+                <li>
+                    <i class="fa fa-angle-double-right"></i>
+                </li>
+                <li>
+                    <f:link.action action="show" arguments="{maillist : settings.request.maillist}">Mailingliste anzeigen</f:link.action>
+                </li>
+            </f:if>
+            <f:if condition="{settings.request.action} == 'new'">
+                <li>
+                    <i class="fa fa-angle-double-right"></i>
+                </li>
+                <li>
+                    <f:link.action action="new">Neue Maillingliste anlegen</f:link.action>
+                </li>
+            </f:if>
+        </ul>
+    </f:if>
+
+    <f:if condition="{settings.request.controller} == 'Server'">
+        <ul>
+            <li>
+                <f:link.action action="list">Alle Server</f:link.action>
+            </li>
+            <f:if condition="{settings.request.action} == 'show'">
+                <li>
+                    <i class="fa fa-angle-double-right"></i>
+                </li>
+                <li>
+                    <f:link.action action="show" arguments="{server : settings.request.server}">Server anzeigen</f:link.action>
+                </li>
+            </f:if>
+            <f:if condition="{settings.request.action} == 'new'">
+                <li>
+                    <i class="fa fa-angle-double-right"></i>
+                </li>
+                <li>
+                    <f:link.action action="new">Neuen Server anlegen</f:link.action>
+                </li>
+            </f:if>
+            <f:if condition="{settings.request.action} == 'edit'">
+                <li>
+                    <i class="fa fa-angle-double-right"></i>
+                </li>
+                <li>
+                    <f:link.action action="edit" arguments="{server : settings.request.server}">Server bearbeiten</f:link.action>
+                </li>
+            </f:if>
+        </ul>
+    </f:if>
+</nav>

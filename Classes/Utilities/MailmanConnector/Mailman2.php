@@ -2,6 +2,11 @@
 namespace BoergenerWebdesign\BwDpsgList\Utilities\MailmanConnector;
 
 class Mailman2 implements Mailman {
+    public static function getName() : string {
+        return "2.15.x";
+    }
+
+
 	private $guzzle = null;
 	private $loggedIn = false;
 	private $maillist = null;
@@ -13,20 +18,25 @@ class Mailman2 implements Mailman {
 		require_once(PATH_typo3conf."ext/bw_dpsg_list/Classes/Utilities/Guzzle/functions_include.php");
 		$this -> guzzle = new \GuzzleHttp\Client([
 			'cookies' => true,
-			'base_uri' => '//'.$this -> maillist -> getServer() -> getAddress().'/mailman/admin/'.$this -> maillist -> getName().'/'
+			'base_uri' => 'https://'.$this -> maillist -> getServer() -> getAddress().'/mailman/admin/'.$this -> maillist -> getName().'/',
+            'verify' => false
 		]);
 	}
 
-	public function login() {
-		// Nicht zweimal anmelden
-		if($this -> loggedIn) {
-			return true;
-		}
+
+    /**
+     * Prüft, ob eine Verbindung zur Mailliste hergestellt werden kann und ob die angegebenen Zugangsdaten stimmen.
+     * @return bool
+     */
+	public function login() : bool {
+	    if($this -> loggedIn) {
+	        return true;
+        }
 
 		try {
-			$this -> guzzle -> post("", [
+	        $this -> guzzle -> post("", [
 				'form_params' => [
-					'adminpw' => $this -> maillist -> getPassword()
+					'adminpw' => $this -> maillist -> getPassword(true)
 				]
 			]);
 			$this -> loggedIn = true;
@@ -36,25 +46,92 @@ class Mailman2 implements Mailman {
 		}
 	}
 
+    /**
+     * Erstellt eine Liste
+     * @return bool
+     */
+	public function create() : bool {
+        try {
+            $result = $this -> guzzle -> post('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/create', [
+                'form_params' => [
+                    'listname' => $this -> maillist -> getName(),
+                    'owner' => $this -> maillist -> getListowner(),
+                    'autogen' => 0,
+                    'password' => $this -> maillist -> getPassword(),
+                    'confirm' => $this -> maillist -> getPassword(),
+                    'notify' => 1,
+                    'auth' => $this -> maillist -> getServer() -> getCreationPassword(),
+                    'doit' => 'Create List'
+                ]
+            ]);
+            $this -> configList();
+            return true;
+        } catch(\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Entfernt die Liste vom Server.
+     */
+    public function delete() : void {
+        $this -> loggedIn = false;
+        $result = $this -> guzzle -> post('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/rmlist/'.$this -> maillist -> getName(), [
+            'form_params' => [
+                'password' => $this -> maillist -> getPassword(),
+                'delarchives' => 1,
+                'doit' => 'Delete this list'
+            ]
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public function getMembers() {
 		if(!$this -> login()) {
 			throw new \Exception("Es konnte keine Verbindung mit dem Verteiler hergestellt werden.");
 		}
-		$response = $this -> guzzle -> get('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/roster/'.$this -> maillist -> getName().'/');
+		$response = $this -> guzzle -> get('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/admin/'.$this -> maillist -> getName().'/members');
 
 		$dom = new \DOMDocument;
-		$dom->loadHTML($response->getBody());
-		$domElements = $dom->getElementsByTagName('li');
+		$dom->loadHTML($response->getBody(), LIBXML_NOERROR);
+		$table = $dom->getElementsByTagName('table')[4];
+		$trs = $table -> getElementsByTagName("tr");
+
 		$users = [];
-		foreach($domElements as $user) {
-			$mail = trim($user -> textContent);
-			$match = [];
-			if(preg_match ( '#\((.*?)\)#',$mail, $match)) {
-				$users[] = $match[1];
-			} else {
-				$users[] = $mail;
-			}
+		for($i = 2; $i < count($trs); $i++) {
+			$tr = $trs[$i];
+			$tds = $tr -> getElementsByTagName("td");
+			$email = strtolower(trim($tds[1] -> getElementsByTagName("a")[0] -> textContent));
+			$name = trim($tds[1] -> getElementsByTagName("input")[0] -> getAttribute('value'));
+			$send = $tds[2] -> getElementsByTagName("input")[0] -> getAttribute('checked') != "checked";
+			$receive = $tds[4] -> getElementsByTagName("input")[0] -> getAttribute('checked') != "checked";
+
+			$users[] = [
+				'email' => $email,
+				'name' => $name,
+				'send' => $send,
+				'receive' => $receive
+			];
 		}
+
 		return $users;
 	}
 
@@ -163,47 +240,46 @@ class Mailman2 implements Mailman {
 
 		// Ermitteln wer noch kein Mitglied ist
 		$addToMaillist = [];
-		foreach($this -> maillist -> getReceiversEmails() as $receiversEmail) {
-			$index = array_search($receiversEmail["mail"], $currentMembers);
+		$emails = $this -> maillist -> getReceiversEmails();
+		if($this -> maillist -> getType() == 0) {
+			// Wenn nur bestimmte Personen an die Liste schreiben dürfen diese auch hinzufügen.
+			$emails = array_merge($emails, $this -> maillist -> getSendersEmails());
+		}
+
+		foreach($emails as $email) {
+			$index = $this -> findInMemberArray($email["mail"], $currentMembers);
 			if($index !== false) {
 				unset($currentMembers[$index]);
 			} else {
-				$addToMaillist[] = $receiversEmail["mail"];
-			}
-		}
-		if($this -> maillist -> getType() == 0) {
-			foreach($this -> maillist -> getSendersEmails() as $sendersEmail) {
-				$index = array_search($sendersEmail["mail"], $currentMembers);
-				if($index !== false) {
-					unset($currentMembers[$index]);
-				} else {
-					$addToMaillist[] = $sendersEmail["mail"];
-				}
+				$addToMaillist[] = strtolower($email["mail"]);
 			}
 		}
 
-
-		// Fehlende Mitglieder eintragen
+        // Fehlende Mitglieder eintragen
 		if($addToMaillist) {
 			$this -> addUsers($addToMaillist);
 		}
 		// Gelöscht Mitglieder austragen
 		if($currentMembers) {
-			$this -> removeUsers($currentMembers);
+			$emails = [];
+			foreach($currentMembers as $currentMember) {
+				$emails[] = $currentMember["email"];
+			}
+			$this -> removeUsers($emails);
 		}
 
 		// Berechtigungen aller Mitglieder setzen dazu die aktuellen Mitglieder erneut einlesen
 		$currentMembers = $this -> getMembers();
 		$members = [];
 		foreach($currentMembers as $member) {
-			$members[$member] = [
-				"realname" => "",
+			$members[$member["email"]] = [
+				"realname" => $member["name"],
 				"nodupes" => 1,
 				"plain" => 1,
 				"language" => "en"
 			];
 			if(!$this -> maillist -> getType()) {
-				$members[$member]["mod"] = 1;
+				$members[$member["email"]]["mod"] = 1;
 			}
 		}
 
@@ -222,7 +298,6 @@ class Mailman2 implements Mailman {
 			$members[$receiver["mail"]]["realname"] = utf8_decode($receiver["name"]);
 			unset($members[$receiver["mail"]]["nomail"]);
 		}
-
 		
 		// Variabeln speichern
 		$vars = [];
@@ -276,12 +351,11 @@ class Mailman2 implements Mailman {
 			'form_params' => [
 				"host_name" => "stamm-sugambrer.de",
 				"owner" => "webmaster@stamm-sugambrer.de",
-                "subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
+                "admin_member_chunksize" => 7000,
+				"max_message_size" => 0,
 				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/public/goodbyeack.txt")),
-				"admin_member_chunksize" => 9000,
-                "max_message_size" => 0,
 				"csrf_token" => $csrfToken
 			]
 		]);
@@ -323,6 +397,14 @@ class Mailman2 implements Mailman {
 				"csrf_token" => $csrfToken
 			]
 		]);
+        // Passwort
+        $this -> guzzle -> post('passwords/', [
+            'form_params' => [
+                "newpw" => $this -> maillist -> getPassword(),
+                "confirmpw" => $this -> maillist -> getPassword(),
+                "csrf_token" => $csrfToken
+            ]
+        ]);
 		// Public Pages
 		$this -> guzzle -> post('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/edithtml/'.$this -> maillist -> getName().'/listinfo.html', [
 			'form_params' => [
@@ -362,10 +444,9 @@ class Mailman2 implements Mailman {
 				"owner" => "webmaster@stamm-sugambrer.de",
 				"moderator" => $this -> maillist -> getListowner(),
 				"send_reminders" => 0,
-				"subject_prefix" => "[".utf8_decode($this -> maillist -> getDisplayname())."]",
-				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/goodbyeack.txt")),
-                "admin_member_chunksize" => 9000,
+                "admin_member_chunksize" => 7000,
                 "max_message_size" => 0,
+				"goodbye_msg" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/goodbyeack.txt")),
 				"csrf_token" => $csrfToken
 			]
 		]);
@@ -396,6 +477,7 @@ class Mailman2 implements Mailman {
 		]);
 		$this -> guzzle -> post('privacy/sender/', [
 			'form_params' => [
+				"member_moderation_action" => 1,
 				"member_moderation_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
 				"generic_nonmember_action" => 2,
 				"nonmember_rejection_notice" => utf8_decode(file_get_contents(PATH_typo3conf."ext/bw_dpsg_list/Resources/Private/MailmanHTML/private/reject.txt")),
@@ -409,6 +491,14 @@ class Mailman2 implements Mailman {
 				"csrf_token" => $csrfToken
 			]
 		]);
+		// Passwort
+        $this -> guzzle -> post('passwords/', [
+            'form_params' => [
+                "newpw" => $this -> maillist -> getPassword(),
+                "confirmpw" => $this -> maillist -> getPassword(),
+                "csrf_token" => $csrfToken
+            ]
+        ]);
 		// Public Pages
 		$this -> guzzle -> post('//'.$this -> maillist -> getServer() -> getAddress().'/mailman/edithtml/'.$this -> maillist -> getName().'/listinfo.html', [
 			'form_params' => [
@@ -444,6 +534,15 @@ class Mailman2 implements Mailman {
 		{
 			if ($input->getAttribute('name') == 'csrf_token') {
 				return $input->getAttribute('value');
+			}
+		}
+		return false;
+	}
+
+	private function findInMemberArray($haystack, $array) {
+		foreach($array as $index => $value) {
+			if(strtolower($value["email"]) === strtolower($haystack)) {
+				return $index;
 			}
 		}
 		return false;

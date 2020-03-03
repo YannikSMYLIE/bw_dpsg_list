@@ -1,8 +1,7 @@
 <?php
 namespace BoergenerWebdesign\BwDpsgList\Domain\Model;
 
-class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
-{
+class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 	public function __construct()
 	{
 		$this->senders = new \TYPO3\CMS\Extbase\Persistence\ObjectStorage();
@@ -26,48 +25,36 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 		$this -> server = $server;
     }
 
-    /**
-     * @var string
-     */
+	/**
+	 * @var string
+	 */
     protected $name;
-    /**
-     * @return string
-     */
-    public function getName() : string {
-        return $this -> name;
-    }
-    /**
-     * @param string $name
-     */
-    public function setName(string $name) : void {
-        $this -> name = $name;
-    }
-
-    /**
-     * @var string
-     */
-    protected $displayname;
-    /**
-     * @return string
-     */
-    public function getDisplayname() : string {
-        return $this -> displayname;
-    }
-    /**
-     * @param string $displayname
-     */
-    public function setDisplayname(string $displayname) : void {
-        $this -> displayname = $displayname;
-    }
+	/**
+	 * @return string
+	 */
+	public function getName() : string {
+		return $this -> name;
+	}
+	/**
+	 * @param string $name
+	 */
+	public function setName(string $name) : void {
+		$this -> name = $name;
+	}
 
 	/**
 	 * @var string
 	 */
     protected $password;
 	/**
+     * Gibt das aktuelle, oder bei $original das vor der Änderung aktuelle Passwort zurück.
+     * @var bool $original
 	 * @return string
 	 */
-	public function getPassword() : string {
+	public function getPassword(bool $original = false) : string {
+	    if($original && $this -> _isDirty("password") && $this -> getUid()) {
+	        return $this -> _getCleanProperty("password");
+        }
 		return $this -> password;
 	}
 	/**
@@ -104,6 +91,12 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	public function getType() : int {
 		return $this -> type;
 	}
+    /**
+     * @param int $type
+     */
+	public function setType(int $type) : void {
+	    $this -> type = $type;
+    }
 
 	/**
 	 * @var bool
@@ -115,6 +108,12 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	public function getArchive() : bool {
 		return $this -> archive;
 	}
+    /**
+     * @param bool $archive
+     */
+	public function setArchive(bool $archive) : void {
+	    $this -> archive = $archive;
+    }
 
 	/**
 	 * @var \TYPO3\CMS\Extbase\Persistence\ObjectStorage<\BoergenerWebdesign\BwDpsgList\Domain\Model\Group>
@@ -182,10 +181,74 @@ class Maillist extends \TYPO3\CMS\Extbase\DomainObject\AbstractValueObject
 	}
 	private function getEmails($groups) {
 		$emails = [];
+
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
 		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
 		foreach($groups as $member) {
 			$emails = array_merge($emails, $member -> getMails());
 		}
+
+		array_values($emails);
 		return $emails;
 	}
+
+	public function getFullReceiversEmails() {
+		$emails = [];
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
+		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
+		foreach($this -> getReceivers() as $member) {
+			$emails = array_merge($emails, $member -> getMails());
+		}
+
+		// Dann alle einlesen welche derzeit in der Mailliste sind.
+		foreach($this -> getClient() -> getMembers() as $member) {
+			if(key_exists($member["email"], $emails)) {
+				$emails[$member["email"]]["listed"] = true;
+			} else if($member["receive"]) {
+				$emails[$member["email"]] = [
+					'name' => $member["name"],
+					'mail' => $member["email"],
+					'authorized' => false,
+					'listed' => true
+				];
+			}
+		}
+
+		array_values($emails);
+		return $emails;
+	}
+	public function getFullSendersEmails() {
+		$emails = [];
+		// Erst einmal alle einlesen welche berechtigt sind in der Mailliste zu sein.
+		/** @var \BoergenerWebdesign\BwDpsgList\Domain\Model\Group $sender */
+		foreach($this -> getSenders() as $member) {
+			$emails = array_merge($emails, $member -> getMails());
+		}
+
+		// Dann alle einlesen welche derzeit in der Mailliste sind.
+		foreach($this -> getClient() -> getMembers() as $member) {
+			if(key_exists($member["email"], $emails)) {
+				$emails[$member["email"]]["listed"] = true;
+			} else if($member["send"]) {
+				$emails[$member["email"]] = [
+					'name' => $member["name"],
+					'mail' => $member["email"],
+					'authorized' => false,
+					'listed' => true
+				];
+			}
+		}
+
+		array_values($emails);
+		return $emails;
+	}
+
+    /**
+     * @return \BoergenerWebdesign\BwDpsgList\Utilities\MailmanConnector\Mailman
+     */
+	public function getClient() : \BoergenerWebdesign\BwDpsgList\Utilities\MailmanConnector\Mailman {
+        $className = $this -> getServer() -> getVersion();
+        /** @var \BoergenerWebdesign\BwDpsgList\Utilities\MailmanConnector\Mailman $client */
+        return new $className($this);
+    }
 }

@@ -1,9 +1,4 @@
-
-# Module configuration
 module.tx_bwdpsglist {
-  persistence {
-    storagePid = {$module.tx_bwdpsglist.persistence.storagePid}
-  }
   view {
     templateRootPaths.0 = EXT:bw_dpsg_list/Resources/Private/Backend/Templates/
     templateRootPaths.1 = {$module.tx_bwdpsglist.view.templateRootPath}
@@ -11,5 +6,8 @@ module.tx_bwdpsglist {
     partialRootPaths.1 = {$module.tx_bwdpsglist.view.partialRootPath}
     layoutRootPaths.0 = EXT:bw_dpsg_list/Resources/Private/Backend/Layouts/
     layoutRootPaths.1 = {$module.tx_bwdpsglist.view.layoutRootPath}
+  }
+  persistence {
+    storagePid = {$module.tx_bwdpsglist.persistence.storagePid}
   }
 }

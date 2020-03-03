@@ -1,0 +1,50 @@
+<nav id="main" class="hidden-print">
+    <ul class="primary">
+        <li>
+            <f:link.action controller="Maillist" action="list" class="{f:if(condition : '{settings.request.controller} == \'Maillist\'', then : 'active', else : 'text-muted')}">
+                <i class="fa fa-reply-all" aria-hidden="true"></i>
+                Maillisten
+            </f:link.action>
+        </li>
+        <li>
+            <f:link.action controller="Server" action="list" class="{f:if(condition : '{settings.request.controller} == \'Server\'', then : 'active', else : 'text-muted')}">
+                <i class="fa fa-server" aria-hidden="true"></i>
+                Server verwalten
+            </f:link.action>
+        </li>
+    </ul>
+
+    <f:if condition="{settings.request.controller} == 'Maillist'">
+        <ul class="secondary">
+            <li>
+                <f:link.action controller="Maillist" action="list" class="{f:if(condition : '{settings.request.action} == \'list\'', then : 'active', else : 'text-muted')}">
+                    <i class="fa fa-list" aria-hidden="true"></i>
+                    Maillisten anzeigen
+                </f:link.action>
+            </li>
+            <li>
+                <f:link.action controller="Maillist" action="new" class="{f:if(condition : '{settings.request.action} == \'new\'', then : 'active', else : 'text-muted')}">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    Maillisten anlegen
+                </f:link.action>
+            </li>
+        </ul>
+    </f:if>
+
+    <f:if condition="{settings.request.controller} == 'Server'">
+        <ul class="secondary">
+            <li>
+                <f:link.action controller="Server" action="list" class="{f:if(condition : '{settings.request.action} == \'list\'', then : 'active', else : 'text-muted')}">
+                    <i class="fa fa-list" aria-hidden="true"></i>
+                    Alle Server anzeigen
+                </f:link.action>
+            </li>
+            <li>
+                <f:link.action controller="Server" action="new" class="{f:if(condition : '{settings.request.action} == \'new\'', then : 'active', else : 'text-muted')}">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    Server anlegen
+                </f:link.action>
+            </li>
+        </ul>
+    </f:if>
+</nav>

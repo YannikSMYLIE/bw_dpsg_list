@@ -1,5 +1,0 @@
-﻿# cat=basic/enable; type=int; label=Die Uid des Ordners welche die Datensätze enthält.
-pid =
-
-# cat=basic/enable; type=int; label=Die Uid des Ordners welche die Datensätze enthält.
-pid =

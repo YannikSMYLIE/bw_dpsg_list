@@ -1,0 +1,12 @@
+<f:layout name="Default" />
+
+<f:section name="content">
+	<h1>Neuen Server anlegen</h1>
+	<f:flashMessages />
+
+	<f:form action="create" object="Server" objectName="server">
+		<f:render partial="Server/FormFields" arguments="{versions : versions}" />
+		<f:form.button type="submit" class="btn btn-primary">Server anlegen</f:form.button>
+	</f:form>
+	</table>
+</f:section>

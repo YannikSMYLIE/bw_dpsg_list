@@ -1,0 +1,57 @@
+<f:layout name="Default" />
+
+<f:section name="content">
+	<h1>Übersicht Server</h1>
+	<f:flashMessages />
+
+	<table class="table table-striped" >
+		<tr>
+			<th><f:translate key="tx_bwdpsglist_domain_model_server.address" /></th>
+			<th><f:translate key="tx_bwdpsglist_domain_model_server.version" /></th>
+			<th><f:translate key="tx_bwdpsglist_domain_model_server.creation_password" /></th>
+			<th> </th>
+		</tr>
+
+		<f:for each="{server}" as="singleServer">
+			<tr>
+				<td>{singleServer.address}</td>
+				<td>{singleServer.versionDescription}</td>
+				<td>
+					<f:if condition="{singleServer.creationPassword}">
+						<f:then><span class="text-success">angegeben</span></f:then>
+						<f:else><span class="text-warning">nicht angegeben</span></f:else>
+					</f:if>
+				</td>
+				<td class="text-right">
+					<f:link.action action="edit" arguments="{server : singleServer}" class="btn btn-default" title="Server bearbeiten">
+						<i class="fa fa-edit fa-fw"></i>
+					</f:link.action>
+					<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#server-{singelServer.uid}-remove" title="Server entfernen">
+						<i class="fa fa-trash-o fa-fw"></i>
+					</button>
+
+					<div class="modal fade text-left" id="server-{singelServer.uid}-remove" tabindex="-1" role="dialog" aria-labelledby="server-{singelServer.uid}-removeLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="server-{singelServer.uid}-removeLabel">Server entfernen</h4>
+								</div>
+								<div class="modal-body">
+									<p>Möchtest du diesen Server und alle zugehörigen Maillisten wirklich entfernen?</p>
+									<strong>Die Maillisten werden auch vom Mailman-Server entfernt!</strong>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+									<f:link.action action="delete" arguments="{server : singleServer}" class="btn btn-danger" title="Server entfernen">
+										Server wirklich entfernen
+									</f:link.action>
+								</div>
+							</div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</f:for>
+	</table>
+</f:section>
