@@ -1,0 +1,23 @@
+{
+  "name": "boergenerwebdesign/bw-dpsg-list",
+  "type": "typo3-cms-extension",
+  "description": "Verbindet die NaMi mit Mailman und organisiert automatisch Verteiler",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "typo3/cms-core": "^8.7 || ^9.5 || ^10.1"
+  },
+  "replace": {
+    "vendorname/bw-dpsg-list": "self.version",
+    "typo3-ter/bw-dpsg-list": "self.version"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "bw_dpsg_list"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "BoergenerWebdesign\\BwDpsgList\\": "Classes/"
+    }
+  }
+}
